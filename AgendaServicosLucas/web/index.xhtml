@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html style="display: flex; justify-content: center; align-items: center; height: 100vh" 
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Agendamento de Equipe</title>
+    </h:head>
+
+    <style>
+        table.ui-panelgrid.ui-widget{
+            display: flex;
+            justify-content: center;
+        }
+
+    </style>
+
+    <h:body style="display: flex; flex-direction: column">
+
+        <h:form>
+            <!--readonlyInput="true"-->
+            <!--validar data, email e telefone no back-->
+            <!--fazer metodo atualizarTabela ao colocar a data no input-->
+            <!--ver com prof se botao limpar é pra limpar os campos ou a tabela no caso os agendamentos que aparecem-->
+
+            <!--listener="{buscaBean.atualizarTabela}"-->
+
+            <h1 style="display: flex; justify-content: center;">Agendamento de Equipe</h1>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Tipo de serviço"/>
+                <p:selectOneMenu value="#{buscaBean.tipoServicoSelecionado}" 
+                                 converter="#{tipoServicoConverter}">
+                    <f:selectItems value="#{aplicacao.itensTipoServico}"/>
+                    <p:ajax event="change" immediate="true" update="siEquipes, respEquipes, valEquipes, dataEquipes, totalServico"/>
+
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Equipe"/>
+                <p:selectOneMenu id="siEquipes"
+                                 value="#{buscaBean.equipeSelecionada}"
+                                 converter="#{equipeConverter}">
+                    <f:selectItems value="#{buscaBean.itensEquipe}"/>
+                    <p:ajax event="change" immediate="true" update=":tableAgendamentos, respEquipes, valEquipes, dataEquipes, totalServico"/>
+
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Responsável"/>
+                <h:outputText id="respEquipes" value="#{buscaBean.responsavel}" />
+
+                <p:outputLabel value="Valor do período" />
+                <h:outputText id="valEquipes" value="#{buscaBean.valor}" />
+
+                <p:outputLabel value="Data"/>
+                <h:panelGroup id="dataEquipes" layout="block">
+                    <p:inputText rendered="#{not empty buscaBean.responsavel}" value="#{buscaBean.showData}" />
+                    <f:validator validatorId="dateValidator" />
+
+                    <h:outputText rendered="#{empty buscaBean.responsavel}" />      
+                </h:panelGroup>
+
+                <p:outputLabel value="Período"/>
+                <p:selectOneRadio value="#{buscaBean.periodo}">
+                    <f:selectItem itemValue="Manhã" itemLabel="Manhã"/>
+                    <f:selectItem itemValue="Tarde" itemLabel="Tarde"/>
+                    <f:selectItem itemValue="Dia inteiro" itemLabel="Dia inteiro"/>
+                    <p:ajax event="change" immediate="true" update="totalServico" />
+                </p:selectOneRadio>
+
+                <p:outputLabel value="Total do serviço" />
+                <h:outputText id="totalServico" value="#{buscaBean.totalServico}" />
+
+                <p:outputLabel value="Contratante" />
+                <p:inputText value="#{buscaBean.contratante}" required="true" requiredMessage="informe o contratante"/>
+
+                <p:outputLabel value="Telefone contato" />
+                <p:inputText value="#{buscaBean.telefone}" />
+                <f:validator validatorId="telefoneValidator" />
+<!--REVER ESSES VALIDATOR NO CHAT GPT-->
+                
+                <p:outputLabel value="Email" />
+                <p:inputText value="#{buscaBean.email}" />
+                <f:validator validatorId="emailValidator" />
+
+                <p:outputLabel value="Endereço do serviço" />
+                <p:inputText value="#{buscaBean.endereco}" />
+
+            </p:panelGrid>
+            <div style="width: 100%; display: flex; justify-content: center; margin-top: 10px; gap: 10px">
+                <!--                aqui no botao de agendar, no metodo cadAgendamento verifica os agendamentos q aparecem na datatable
+                nao dxar ele cadastrar um agendamento novo com a mesma equipe, no mesmo dia no mesmo periodo-->
+                <p:commandButton value="Agendar" action="#{buscaBean.agendar}" update=":errorMessage"/>
+                <p:commandButton value="Limpar"/>
+            </div>
+            
+        </h:form>
+
+
+        <!--colocar aq no value a lista com os agendamentos-->
+        <p:dataTable id="tableAgendamentos" value="" var="">
+
+            <p:column headerText="Tipo de Serviço">
+                <h:outputText value=""/>
+            </p:column>
+
+            <p:column headerText="Equipe">
+                <h:outputText value=""/>
+            </p:column>
+
+            <p:column headerText="Responsável">
+                <h:outputText value=""/>
+            </p:column>
+
+            <p:column headerText="Data">
+                <h:outputText value=""/>
+            </p:column>
+
+            <p:column headerText="Período">
+                <h:outputText value=""/>
+            </p:column>
+
+            <!--aq no cliente é o contratante-->
+            <p:column headerText="Cliente">
+                <h:outputText value=""/>
+            </p:column>
+
+        </p:dataTable>
+        <p:growl id="errorMessage"/>
+    </h:body>
+</html>
+
